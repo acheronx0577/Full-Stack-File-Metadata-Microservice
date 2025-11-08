@@ -1,18 +1,12 @@
 var express = require('express');
 var cors = require('cors');
 var multer = require('multer');
-var path = require('path');
 require('dotenv').config()
 
 var app = express();
 
 // Configure multer for file uploads
-var upload = multer({ 
-  dest: 'uploads/',
-  limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
-  }
-});
+var upload = multer({ dest: 'uploads/' });
 
 app.use(cors());
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -21,7 +15,7 @@ app.get('/', function (req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-// File upload endpoint
+// File upload endpoint - this matches your HTML form action
 app.post('/api/fileanalyse', upload.single('upfile'), function (req, res) {
   try {
     if (!req.file) {
@@ -30,6 +24,7 @@ app.post('/api/fileanalyse', upload.single('upfile'), function (req, res) {
 
     const { originalname, mimetype, size } = req.file;
     
+    // Return the required file metadata
     res.json({
       name: originalname,
       type: mimetype,
