@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const outputStatus = document.getElementById('outputStatus');
   const statusDisplay = document.getElementById('status');
 
-  // File input display handling
+  // File input display handling - FIXED
   fileInput.addEventListener('change', function() {
     if (this.files && this.files[0]) {
       const file = this.files[0];
@@ -104,30 +104,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Drag and drop functionality
-  fileDisplay.addEventListener('dragover', function(e) {
-    e.preventDefault();
-    this.style.borderColor = 'var(--accent-info)';
-    this.style.background = 'var(--bg-tertiary)';
-  });
-
-  fileDisplay.addEventListener('dragleave', function(e) {
-    e.preventDefault();
-    this.style.borderColor = fileInput.files[0] ? 'var(--accent-success)' : 'var(--border-primary)';
-    this.style.background = 'var(--bg-secondary)';
-  });
-
-  fileDisplay.addEventListener('drop', function(e) {
-    e.preventDefault();
-    this.style.borderColor = 'var(--accent-success)';
-    this.style.background = 'var(--bg-secondary)';
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      fileInput.files = e.dataTransfer.files;
-      fileInput.dispatchEvent(new Event('change'));
-    }
-  });
-
   function showError(message) {
     output.classList.remove('hide');
     outputStatus.textContent = 'ERROR';
@@ -142,11 +118,4 @@ document.addEventListener('DOMContentLoaded', function() {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
-
-  // Add Enter key support for accessibility
-  document.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && (document.activeElement === fileDisplay || document.activeElement === uploadBtn)) {
-      uploadBtn.click();
-    }
-  });
 });
