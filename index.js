@@ -1,43 +1,25 @@
 var express = require('express');
 var cors = require('cors');
 var multer = require('multer');
-require('dotenv').config()
 
 var app = express();
-
-// FIX: Use memory storage instead of disk storage for Vercel
-var upload = multer({ 
-  storage: multer.memoryStorage(), // This keeps files in memory, no disk writes
-  limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
-  }
-});
+var upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors());
-app.use('/public', express.static(process.cwd() + '/public'));
+app.use('/public', express.static('public'));
 
-app.get('/', function (req, res) {
-  res.sendFile(process.cwd() + '/views/index.html');
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/views/index.html');
 });
 
-// File upload endpoint
-app.post('/api/fileanalyse', upload.single('upfile'), function (req, res) {
-  try {
-    if (!req.file) {
-      return res.json({ error: 'No file uploaded' });
-    }
-
-    const { originalname, mimetype, size } = req.file;
-    
-    res.json({
-      name: originalname,
-      type: mimetype,
-      size: size
-    });
-  } catch (error) {
-    res.json({ error: 'Error processing file' });
-  }
+app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
+  if (!req.file) return res.json({ error: 'No file' });
+  
+  res.json({
+    name: req.file.originalname,
+    type: req.file.mimetype,
+    size: req.file.size
+  });
 });
 
-// For Vercel, we need to export the app instead of using app.listen()
 module.exports = app;

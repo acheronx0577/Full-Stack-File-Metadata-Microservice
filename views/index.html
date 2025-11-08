@@ -1,107 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="/public/style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <title>FILE_METADATA</title>
-  </head>
-  <body>
-    <div class="terminal">
-      <header class="terminal-header">
-        <div class="window-controls">
-          <span class="control close"></span>
-          <span class="control minimize"></span>
-          <span class="control maximize"></span>
-        </div>
-        <div class="title-bar">
-          <span class="prompt">></span>
-          <span class="title">FILE_METADATA_MICROSERVICE</span>
-          <span class="cursor">_</span>
-        </div>
-      </header>
+<html>
+<head>
+    <title>Test File Upload</title>
+</head>
+<body>
+    <h1>Test File Upload</h1>
+    
+    <h2>Test API Endpoint</h2>
+    <button onclick="testAPI()">Test API</button>
+    <div id="apiResult"></div>
+    
+    <h2>Test File Upload</h2>
+    <form id="uploadForm">
+        <input type="file" name="upfile" id="upfile">
+        <button type="submit">Upload</button>
+    </form>
+    <div id="uploadResult"></div>
 
-      <main class="terminal-body">
-        <div class="app-header">
-          <h1 class="app-title">~/fcc/file_metadata</h1>
-          <div class="status-bar">
-            <span class="status-item">API_READY</span>
-            <span class="status-item">v1.0.0</span>
-            <span class="status-item">MULTER</span>
-          </div>
-        </div>
+    <script>
+        async function testAPI() {
+            try {
+                const response = await fetch('/api/test');
+                const data = await response.json();
+                document.getElementById('apiResult').innerHTML = 
+                    '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('apiResult').innerHTML = 'Error: ' + error;
+            }
+        }
 
-        <div class="input-section">
-          <div class="input-group">
-            <label class="input-label">
-              <span class="label-text">SELECT_FILE</span>
-              <span class="label-desc">[max_10MB]</span>
-            </label>
-            <div class="file-input-wrapper">
-              <input
-                type="file"
-                id="upfile"
-                name="upfile"
-                class="terminal-input"
-              />
-              <div class="file-input-display" id="fileDisplay">
-                <span class="file-name" id="fileName">NO_FILE_SELECTED</span>
-                <span class="file-browse">[BROWSE]</span>
-              </div>
-            </div>
-          </div>
-
-          <button id="upload" class="terminal-btn primary">
-            <span class="btn-text">[UPLOAD_ANALYZE]</span>
-          </button>
-        </div>
-
-        <div id="output" class="output-panel hide">
-          <div class="output-header">
-            <span class="output-title">METADATA_REPORT</span>
-            <span class="output-status" id="outputStatus">PROCESSING</span>
-          </div>
-          <div class="output-content">
-            <div id="result" class="result-content"></div>
-          </div>
-        </div>
-
-        <div class="info-panel">
-          <div class="info-header">
-            <span class="info-title">API_REQUIREMENTS</span>
-          </div>
-          <div class="info-content">
-            <div class="requirement-list">
-              <div class="requirement-item">
-                <span class="requirement-check">✓</span>
-                <span>Form with file upload input</span>
-              </div>
-              <div class="requirement-item">
-                <span class="requirement-check">✓</span>
-                <span>Input field name: "upfile"</span>
-              </div>
-              <div class="requirement-item">
-                <span class="requirement-check">✓</span>
-                <span>JSON response with name, type, size</span>
-              </div>
-              <div class="requirement-item">
-                <span class="requirement-check">✓</span>
-                <span>Uses multer for file handling</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <footer class="terminal-footer">
-        <div class="footer-stats">
-          <span class="stat">STATUS: <span id="status">READY</span></span>
-          <span class="stat">ENDPOINT: /api/fileanalyse</span>
-          <span class="stat">METHOD: POST</span>
-        </div>
-      </footer>
-    </div>
-    <script src="/public/script.js"></script>
-  </body>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const fileInput = document.getElementById('upfile');
+            
+            if (!fileInput.files[0]) {
+                alert('Please select a file');
+                return;
+            }
+            
+            formData.append('upfile', fileInput.files[0]);
+            
+            try {
+                const response = await fetch('/api/fileanalyse', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                document.getElementById('uploadResult').innerHTML = 
+                    '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('uploadResult').innerHTML = 'Error: ' + error;
+            }
+        });
+    </script>
+</body>
 </html>
