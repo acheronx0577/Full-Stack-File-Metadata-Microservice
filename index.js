@@ -15,7 +15,8 @@ var upload = multer({
 });
 
 app.use(cors());
-app.use('/public', express.static(process.cwd() + '/public'));
+// Serve static files from public folder at root URL
+app.use(express.static(process.cwd() + '/public'));
 
 app.get('/', function (req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
