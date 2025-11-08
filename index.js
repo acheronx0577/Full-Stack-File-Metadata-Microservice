@@ -5,8 +5,13 @@ require('dotenv').config()
 
 var app = express();
 
-// Configure multer for file uploads
-var upload = multer({ dest: 'uploads/' });
+// FIX: Use memory storage instead of disk storage for Vercel
+var upload = multer({ 
+  storage: multer.memoryStorage(), // This keeps files in memory, no disk writes
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
 
 app.use(cors());
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -34,7 +39,5 @@ app.post('/api/fileanalyse', upload.single('upfile'), function (req, res) {
   }
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, function () {
-  console.log('Your app is listening on port ' + port)
-});
+// For Vercel, we need to export the app instead of using app.listen()
+module.exports = app;
